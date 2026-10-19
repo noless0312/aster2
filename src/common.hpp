@@ -887,6 +887,34 @@ public:
 		else root()->regraftAbove(tree);
 		return root();
 	}
+
+	Node* merge(AnnotatedBinaryTree& other) noexcept {
+		if (this == &other) return root();
+
+		if (empty()) {
+			rootRef().swap(other.rootRef());
+			if (!empty()) root()->p = dummy_root.get();
+			return root();
+		}
+
+		if (other.empty()) return root();
+
+		unique_ptr<Node> oldThisRoot;
+		oldThisRoot.swap(rootRef());
+
+		unique_ptr<Node> oldOtherRoot;
+		oldOtherRoot.swap(other.rootRef());
+
+		unique_ptr<Node> newRoot(new Node());
+		newRoot->lc = std::move(oldThisRoot);
+		newRoot->rc = std::move(oldOtherRoot);
+		newRoot->lc->p = newRoot.get();
+		newRoot->rc->p = newRoot.get();
+		newRoot->p = dummy_root.get();
+		rootRef() = std::move(newRoot);
+
+		return root();
+	}
 	
 	template<typename... Args> std::ostream &display(std::ostream &out, String<Args> const &... args) const{
 		return display<String, Args...>(out, std::forward<String<Args> const &>(args)...);

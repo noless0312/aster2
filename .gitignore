@@ -7,3 +7,5 @@ src/test
 bin/
 doc/
 log.txt
+outcome.txt
+src/treetest.cpp
